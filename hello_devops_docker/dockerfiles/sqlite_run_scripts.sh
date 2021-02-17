@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm /working_dir/db_csv/blog.db 2> /dev/null
+
 # Create the blog database
 cd db_csv
 python3 create_db.py
