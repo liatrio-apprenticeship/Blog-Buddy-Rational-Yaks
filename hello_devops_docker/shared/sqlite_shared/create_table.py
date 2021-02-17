@@ -45,7 +45,8 @@ def main():
                                     target_func_1 text,
                                     target_level_2 text,
                                     target_func_2 text,
-                                    liatrio_service_conn text
+                                    liatrio_service_conn text,
+                                    link text
                                 );"""
 
     # create a database connection
