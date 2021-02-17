@@ -1,4 +1,0 @@
-# Ignore sqlite files
-*.sqlite3
-*.db
-*.DS_Store
