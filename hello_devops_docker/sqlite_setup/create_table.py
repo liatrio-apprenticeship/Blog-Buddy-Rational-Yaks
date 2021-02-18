@@ -34,7 +34,7 @@ def create_table(conn, create_table_sql):
 
 
 def main():
-    database = r"/working_dir/db_csv/blog.db"
+    database = r"/working_dir/sqlite/blog.db"
 
     sql_create_blogs_table = """CREATE TABLE IF NOT EXISTS blogs (
                                     kickoff text,

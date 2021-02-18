@@ -1,36 +1,10 @@
 version: '3.9'
 services:
-  sqlite_service:
+  botkit_service:
     build: 
-      context: "./dockerfiles"
-      dockerfile: "sqlite.Dockerfile"
-    container_name: "sqlite_container"
+      context: "."
+    container_name: "bot_container"  
     volumes:
-      - ./shared/sqlite_shared:/working_dir/db_csv
-  artifactory_service:
-    build: 
-      context: "./dockerfiles"
-      dockerfile: "artifactory.Dockerfile"  
-    container_name: "artifactory_container"  
-    volumes:
-      - artifactory-data:/var/opt/jfrog/artifactory  
-    ports:
-        - "9002:8081"
-        - "9003:8082"
-  jenkins_service:
-    build: 
-      context: "./dockerfiles"
-      dockerfile: "jenkins.Dockerfile"    
-    container_name: "jenkins_container"
-    volumes:
-      - jenkins-data:/home/appuser
-    ports:
-        - "9004:8080"
-  sonar_qube:
-    image: sonarqube:7.5-community
-    container_name: "sonarqube_container"
-    ports:
-        - "9005:9000"
+      - sql_volume:/working_dir/sqlite
 volumes:
-    jenkins-data:
-    artifactory-data:
+  sql_volume:
