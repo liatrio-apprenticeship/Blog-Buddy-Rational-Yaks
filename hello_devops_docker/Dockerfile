@@ -16,7 +16,7 @@ RUN yum -y update \
     && ./sqlite_setup.sh
 
 # Image for botkit setup
-FROM centos:7
+FROM centos:7 AS botkit_builder
 WORKDIR /working_dir
 # ---- *** BOTKIT SETUP HERE; files you don't need to persist for the final image ----
 
