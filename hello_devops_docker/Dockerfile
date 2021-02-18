@@ -24,7 +24,10 @@ WORKDIR /working_dir
 FROM centos:7
 WORKDIR /working_dir
 COPY --from=sqlite_builder /working_dir/sqlite ./sqlite
-# ---- *** BOTKIT ESSENTIALS; Only bring over essentials for botkit into the final image ----
+# ---- *** BOTKIT ESSENTIALS HERE; Only bring over essentials for botkit into the final image ----
+
+
+ENTRYPOINT [ "tail", "-f", "/dev/null" ]
 
 # _________________ To Build / Run _________________
 # docker build -t sqlite_builder .
