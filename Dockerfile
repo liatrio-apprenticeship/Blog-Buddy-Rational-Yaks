@@ -1,4 +1,4 @@
-FROM centos/nodejs-10-centos7:latest
+FROM centos:7
 WORKDIR /working_dir
 USER root
 COPY sqlite_setup_fldr/create_db.py sqlite_setup_fldr/
@@ -32,5 +32,4 @@ RUN yum install -y python3 \
     && usermod -a -G appgroup appuser
 
 WORKDIR /working_dir/bot_vol
-
 ENTRYPOINT [ "bash", "./npm_script.sh"]
