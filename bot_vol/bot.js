@@ -2,7 +2,7 @@
 // |__) /  \  |  |__/ |  |  
 // |__) \__/  |  |  \ |  |  
 
-// This is the main file for the blogbuddy bot.
+// This is the main file for the botkit-blogbuddy bot.
 
 // Import Botkit's core features
 const { Botkit } = require('botkit');
@@ -28,6 +28,7 @@ if (process.env.MONGO_URI) {
 
 const adapter = new SlackAdapter({
     // REMOVE THIS OPTION AFTER YOU HAVE CONFIGURED YOUR APP!
+    enable_incomplete: true,
 
     // parameters used to secure webhook endpoint
     verificationToken: process.env.VERIFICATION_TOKEN,
