@@ -11,7 +11,7 @@ Edit the samples, and add your own in the [features/](features/) folder.
 
 NOTE:
 
-This bot was developed on a Mac environment. If you are working in a Windows or Linux environment, you may receive docker errors in regard to the botvol/npm_scripts.sh file.
+This bot was developed in a Mac environment. If you are working in a Windows or Linux environment, you may receive docker issues when running "docker-compose up" in regards to the bot_vol/npm_scripts.sh file.
 
 For Windows:
 
