@@ -10,15 +10,22 @@ This bot is powered by [a folder full of modules](https://botkit.ai/docs/v4/core
 Edit the samples, and add your own in the [features/](features/) folder.
 
 NOTE:
+
 This bot was developed on a Mac environment. If you are working in a Windows or Linux environment, you may receive docker errors in regard to the botvol/npm_scripts.sh file.
 
 For Windows:
+
     1. Install Notepad++
+
     2. Import npm_scripts.sh
+
     3. Edit -> EOL Conversion -> Unix (LF)
+    
     4. Save
 
 For Linux:
+
     1. Install dos2unix ( sudo apt-get install -y dos2unix )
+
     2. Run "dos2unix path/to/file"
  
