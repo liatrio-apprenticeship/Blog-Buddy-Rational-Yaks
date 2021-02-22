@@ -2,7 +2,7 @@
 // |__) /  \  |  |__/ |  |  
 // |__) \__/  |  |  \ |  |  
 
-// This is the main file for the botkit-blogbuddy bot.
+// This is the main file for the blog-buddy bot.
 
 // Import Botkit's core features
 const { Botkit } = require('botkit');

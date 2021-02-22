@@ -5,9 +5,4 @@ services:
       context: .
     container_name: "bot_container" 
     ports:
-      - 3000:3000 
-    volumes:
-      - ./bot_vol/:/working_dir/bot_vol
-      #- sql_volume:/working_dir/sqlite
-
-#  sql_volume:
+      - 3000:3000

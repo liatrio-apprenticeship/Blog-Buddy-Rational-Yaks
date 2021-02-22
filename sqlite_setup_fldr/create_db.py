@@ -17,4 +17,4 @@ def create_connection(db_file):
 
 
 if __name__ == '__main__':
-    create_connection(r"/working_dir/sqlite/blog.db")
+    create_connection(r"/home/node/sqlite/blog.db")
