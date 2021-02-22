@@ -27,5 +27,5 @@ For Linux:
 
     1. Install dos2unix ( sudo apt-get install -y dos2unix )
 
-    2. Run "dos2unix path/to/file"
+    2. Nagivate to project root directory and run "dos2unix bot_vol/npm_script.sh"
  
