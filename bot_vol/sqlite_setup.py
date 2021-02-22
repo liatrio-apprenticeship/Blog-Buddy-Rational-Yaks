@@ -19,5 +19,5 @@ class Blog(Base):
     liatrio_service_conn = Column(String)
     link_liatrio = Column(String)
 
-engine = create_engine('sqlite:////working_dir/sqlite/blog.db')
+engine = create_engine('sqlite:////home/node/sqlite/blog.db')
 Base.metadata.create_all(engine)

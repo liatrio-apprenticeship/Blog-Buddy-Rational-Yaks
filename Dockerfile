@@ -1,35 +1,29 @@
-FROM centos:7
-WORKDIR /working_dir
+FROM centos/python-38-centos7:latest AS builder
+WORKDIR /home/node/sqlite_setup_fldr/
 USER root
-COPY sqlite_setup_fldr/create_db.py sqlite_setup_fldr/
-RUN yum -y update \
-    && yum -y install wget \
-    && yum -y install unzip \
-    # sqlite installation
-    && wget https://www.sqlite.org/2021/sqlite-tools-linux-x86-3340100.zip \
-    && unzip /working_dir/sqlite-tools-linux-x86-3340100.zip \
-    && mv sqlite-tools-linux-x86-3340100 sqlite \
-    # create database
-    && cd sqlite_setup_fldr \
-    && yum install -y python3 \
-    && python3 create_db.py
+COPY sqlite_setup_fldr/ /home/node/sqlite_setup_fldr/
+COPY bot_vol/ /home/node/bot_vol/
+COPY sqlite_vol/ /home/node/sqlite/
+
+RUN pip3 install sqlalchemy \
+    && pip3 install slackclient \
+    && python3 create_db.py \
+    # Setup the 'blogs' table
+    && cd ../bot_vol \
+    && python3 sqlite_setup.py \
+    # Populate the database
+    && cd ../sqlite_setup_fldr \
+    && sqlite3  -separator "," -cmd ".import blogbuddy.csv blogs" /home/node/sqlite/blog.db | echo ".quit"
 
 FROM centos/nodejs-10-centos7:latest
-WORKDIR /working_dir
-COPY sqlite_setup_fldr/ scripts/
-COPY --from=builder /working_dir/sqlite/ sqlite/
+WORKDIR /home/node/bot_vol
 USER root
-EXPOSE 3000
+COPY --from=builder /home/node/sqlite/ /home/node/sqlite/
+COPY --from=builder /home/node/bot_vol /home/node/bot_vol/
 RUN yum install -y python3 \
     && pip3 install --upgrade pip \
     && pip3 install sqlalchemy \
-    && pip3 install slackclient \
-    && cd scripts \
-    && ./sqlite_setup.sh \
-    # non-privileged user
-    && adduser appuser \
-    && groupadd appgroup \
-    && usermod -a -G appgroup appuser
+    && pip3 install slackclient
+EXPOSE 3000
 
-WORKDIR /working_dir/bot_vol
-ENTRYPOINT [ "bash", "./npm_script.sh"]
+ENTRYPOINT [ "./npm_script.sh" ]
