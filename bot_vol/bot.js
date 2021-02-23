@@ -92,18 +92,15 @@ controller.ready(() => {
 
 });
 
-
-
 controller.webserver.get('/', (req, res) => {
 
     res.send(`This app is running Botkit ${ controller.version }.`);
 
 });
 
-
-
-
-
+controller.hears('.*', 'message', async(bot, message) => {
+    await bot.reply(message, 'I heard: ' + message.text);
+});
 
 controller.webserver.get('/install', (req, res) => {
     // getInstallLink points to slack's oauth endpoint and includes clientId and scopes
