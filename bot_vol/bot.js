@@ -98,14 +98,6 @@ controller.webserver.get('/', (req, res) => {
 
 });
 
-controller.hears('.*', 'message', async(bot, message) => {
-    await bot.reply(message, 'I heard: ' + message.text);
-});
-
-controller.on('/help', async(bot, message) => {
-    bot.httpBody({text:'You can send an immediate response using bot.httpBody()'});
-});
-
 controller.webserver.get('/install', (req, res) => {
     // getInstallLink points to slack's oauth endpoint and includes clientId and scopes
     res.redirect(controller.adapter.getInstallLink());
