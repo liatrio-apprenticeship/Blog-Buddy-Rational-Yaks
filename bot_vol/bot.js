@@ -166,3 +166,10 @@ async function getBotUserByTeam(teamId) {
     }
 }
 
+/*
+controller.hears('.*','message', async(bot, message) => {
+
+    await bot.reply(message, 'I heard: ' + message.text);
+
+});
+*/
