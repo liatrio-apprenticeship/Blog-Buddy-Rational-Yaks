@@ -23,7 +23,9 @@ COPY --from=builder /home/node/bot_vol /home/node/bot_vol/
 RUN yum install -y python3 \
     && pip3 install --upgrade pip \
     && pip3 install sqlalchemy \
-    && pip3 install slackclient
+    && pip3 install slack_sdk
 EXPOSE 3000
 
 ENTRYPOINT [ "./npm_script.sh" ]
+
+#ENTRYPOINT [ "tail", "-f", "/dev/null" ]
