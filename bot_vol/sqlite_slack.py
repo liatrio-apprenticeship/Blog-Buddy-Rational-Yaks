@@ -38,7 +38,7 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 logging.basicConfig()
-slack_client = WebClient(token="YOUR_TOKEN_HERE")
+slack_client = WebClient(token="xoxb-3253683248-1785380925907-EbdU5dFl5sOalgtKaWzo3sHn")
 
 id = None
 mychannel = 'yaks-devops-test-channel'
