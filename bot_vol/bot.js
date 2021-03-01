@@ -166,10 +166,21 @@ async function getBotUserByTeam(teamId) {
     }
 }
 
-/*
-controller.hears('.*','message', async(bot, message) => {
+controller.on('slash_command', function(bot,message){
+	switch(message.command){
+		case "/blog-help":
+			bot.replyPublic(message,"Blog Buddy is a slack bot that helps Liatrio keep track of all its blogs.\n" +
+						"Usage: /blog-help <COMMAND> [OPTIONS]\n\n" +
+						"Commands: \n" +
+						"list - Displays all up to date blogs written by Liatrio employees.\n" +
+						"filter - Displays certain blogs based on specific criteria.\n\n" + 
+						"Options: \n" +
+						"author - Displays blogs by a specific author.\n" +
+						"title  - Displays blogs by a specific title.\n" +
+						"summary - Gives a breif description of blogs that have been selected."
+						);
+			let column_names = ['Author', 'Title', 'Summary'];
 
-    await bot.reply(message, 'I heard: ' + message.text);
-
+	}//switch statement
 });
-*/
+
