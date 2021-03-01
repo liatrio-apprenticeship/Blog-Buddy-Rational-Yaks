@@ -14,8 +14,19 @@ const { SlackAdapter, SlackMessageTypeMiddleware, SlackEventMiddleware } = requi
 
 const { MongoDbStorage } = require('botbuilder-storage-mongodb');
 
+//const sqlite3 = require('sqlite3').verbose();                     /* import sqlite3 module (verbose set to produce long stack traces) */
+
 // Load process.env values from .env file
 require('dotenv').config();
+var request = require('request');
+
+// Connecting to a disk file database
+// let db = new sqlite3.Database('sqlite:////home/node/sqlite/blog.db', sqlite3.OPEN_READWRITE, (err) => {
+//     if (err) {
+//       console.error(err.message);
+//     }
+//     console.log('Connected to the blogs database.');
+//   });
 
 let storage = null;
 if (process.env.MONGO_URI) {
@@ -23,8 +34,6 @@ if (process.env.MONGO_URI) {
         url : process.env.MONGO_URI,
     });
 }
-
-
 
 const adapter = new SlackAdapter({
     // REMOVE THIS OPTION AFTER YOU HAVE CONFIGURED YOUR APP!
@@ -92,18 +101,11 @@ controller.ready(() => {
 
 });
 
-
-
 controller.webserver.get('/', (req, res) => {
 
     res.send(`This app is running Botkit ${ controller.version }.`);
 
 });
-
-
-
-
-
 
 controller.webserver.get('/install', (req, res) => {
     // getInstallLink points to slack's oauth endpoint and includes clientId and scopes
@@ -129,6 +131,36 @@ controller.webserver.get('/install/auth', async (req, res) => {
         res.status(401);
         res.send(err.message);
     }
+});
+
+controller.hears(['hi','hello','howdy','hey','aloha','hola','bonjour','oi'],['message'], async (bot,message) => {
+    // do something to respond to message
+    await bot.reply(message,'Oh hai!');
+  
+  });
+
+// controller.on('slash_command', async(bot, message) => {
+//     console.log(message);
+//     if (message.command == '/list') {
+//         await bot.reply(message,'List slash command works!');
+//     }
+// });
+
+controller.on('slash_command', function(bot,message){
+	switch(message.command){
+		case "/blog-help":
+			bot.replyPublic(message,"Blog Buddy is a slack bot that helps Liatrio keep track of all its blogs.\n" +
+						"Usage: /blog-help <COMMAND> [OPTIONS]\n\n" +
+						"Commands: \n" +
+						"list - Displays all up to date blogs written by Liatrio employees.\n" +
+						"filter - Displays certain blogs based on specific criteria.\n\n" + 
+						"Options: \n" +
+						"author - Displays blogs by a specific author.\n" +
+						"title  - Displays blogs by a specific title.\n" +
+						"summary - Gives a breif description of blogs that have been selected."
+						);
+			let column_names = ['Author', 'Title', 'Summary'];
+	}//switch statement
 });
 
 let tokenCache = {};
@@ -166,10 +198,9 @@ async function getBotUserByTeam(teamId) {
     }
 }
 
-/*
-controller.hears('.*','message', async(bot, message) => {
-
-    await bot.reply(message, 'I heard: ' + message.text);
-
-});
-*/
+// db.close((err) => {
+//     if (err) {
+//       console.error(err.message);
+//     }
+//     console.log('Close the database connection.');
+//   });

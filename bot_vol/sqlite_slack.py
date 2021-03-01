@@ -39,7 +39,7 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 logging.basicConfig()
-slack_client = WebClient(token="YOUR_TOKEN_HERE")
+slack_client = WebClient(token="xoxb-3253683248-1785380925907-EoaSZllqvTI0fuVfz2FaRW68")
 
 id = None
 mychannel = 'yaks-devops-test-channel'
@@ -55,3 +55,8 @@ while repeat != 0:
     post_message(slack_client, mychannel)
     repeat = repeat - 1;
         
+
+
+
+
+
