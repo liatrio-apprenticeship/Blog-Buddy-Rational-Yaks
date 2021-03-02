@@ -14,14 +14,15 @@ const { SlackAdapter, SlackMessageTypeMiddleware, SlackEventMiddleware } = requi
 
 const { MongoDbStorage } = require('botbuilder-storage-mongodb');
 
-const sqlite3 = require('sqlite3').verbose();
+const Database = require('sqlite-async').verbose();
 
-let db = new sqlite3.Database('blog.db', (err) => {
-  if (err) {
-    console.error(err.message);
-  }
-  console.log('Connected to the blog database.');
-});
+// let db = new sqlite3.Database('blog.db', (err) => {
+//   if (err) {
+//     console.error(err.message);
+//   } else {
+//     console.log('Connected to the blog database.');
+//   }
+// });
 
 // Load process.env values from .env file
 require('dotenv').config();
@@ -32,8 +33,6 @@ if (process.env.MONGO_URI) {
         url : process.env.MONGO_URI,
     });
 }
-
-
 
 const adapter = new SlackAdapter({
     // REMOVE THIS OPTION AFTER YOU HAVE CONFIGURED YOUR APP!
@@ -83,8 +82,20 @@ if (process.env.CMS_URI) {
 // Once the bot has booted up its internal services, you can use them to do stuff.
 controller.ready(() => {
 
+    Database.open('blog.db')
+        .then(db => {
+            controller.addPluginExtension("db", db);
+            // load traditional developer-created local custom feature modules
+            controller.loadModules(__dirname + '/features');
+        })
+        .catch(err => {
+            console.error('Connect to db failed', err);
+            process.exit(1);
+        })
     // load traditional developer-created local custom feature modules
-    controller.loadModules(__dirname + '/features');
+    // controller.loadModules(__dirname + '/features');
+
+
 
     /* catch-all that uses the CMS to trigger dialogs */
     if (controller.plugins.cms) {
@@ -101,18 +112,11 @@ controller.ready(() => {
 
 });
 
-
-
 controller.webserver.get('/', (req, res) => {
 
     res.send(`This app is running Botkit ${ controller.version }.`);
 
 });
-
-
-
-
-
 
 controller.webserver.get('/install', (req, res) => {
     // getInstallLink points to slack's oauth endpoint and includes clientId and scopes
@@ -175,10 +179,262 @@ async function getBotUserByTeam(teamId) {
     }
 }
 
-controller.hears(new RegExp(/^blog filter author (.*?)$/i), 'message', async(bot, message) => {
+async function wait_on(sql) {
+    let response = "---";
+    var promises = [];
+    var promises2 = [];
 
-    // message.matches is the result of message.text.match(regexp) so in this case the parameter is in message.matches[1]
-    let param = message.matches[1];
-    await bot.reply(message, `I will look for authors matching \'${ param }\'`);
+    var foo = db.all(sql);
+    console.log(foo); 
+    // db.each(sql, (err, row) => {
+    
+        // var p = new Promise(function(resolve, reject) {
+        //     asyncPush(arr, 'foo', resolve);
+        // });
 
-});
+        // p.then(function() {
+        //     var a = getArr();
+        //     console.log(a);
+        //     console.log(a[0]);
+        //     console.log(JSON.stringify(a, null, 2));
+        //   });
+          
+
+        //console.log("before pushing: " + row.author);
+        // promises.push(row.author);
+        //console.log("after pushing");
+
+
+        // const p3 = new Promise(function(resolve, reject) {
+        //     resolve(row.author);
+        //     reject(console.log("ERROR___________________________________________"));
+        // });
+        // promises2.push(p3);
+    // });
+
+    //promises2[0].then(success => console.log("success!!!: ", success));
+
+    /*or (var i = 0; i < promises2.length; i++) {
+        // console.log(promises[i]);
+        //console.log(promises2[i].then);
+    };*/
+
+    /*
+    Promise.all(promises2).then(function(values) {
+        console.log(values);
+        //console.log(values.then)
+    });
+    */
+
+    /*
+    const result = new Promise((resolve, reject) => {
+        db.each(sql, (err, row) => {
+            if (err) {
+                reject(err);
+            }
+            response += row.author + " ";
+        });  
+
+        
+    })
+
+    resolve(response);
+    return result;
+    */
+}
+  
+/*
+const userAllowedToDeployWithPromise = (sql) => {
+    //return new Promise(function(resolve, reject) {
+    
+      controller.storage.users.get(user_id, function(err, stored_user) {
+        //let result = (some calculations from stored_user here);
+        resolve(result);
+      });
+    
+        let response = "function internal -- ";
+
+        db.each(sql, (err, row) => {
+            if (err) {
+                reject(err);
+            }
+            response += row.author + " ";
+        }); 
+        
+        //resolve(response);
+
+        return response;
+
+    //});
+    
+  };
+*/
+
+// controller.hears(new RegExp(/^blog filter author (.*?)$/i), 'message', async(bot, message) => {
+//     let param = message.matches[1];
+//     let sql = `SELECT author FROM blogs`;
+
+//     /* Make a request to another API */
+//     //const response = "And... nothing " + await wait_on(sql);
+//     const response2 = await wait_on(sql);
+    
+//     /* Reply based on the response */
+//     await bot.reply(message, `Sanity check`);
+//     //await bot.reply(message, `Response from API: ${response.output}`);
+//     console.log(response2);
+//     await bot.reply(message, `Response from API: ${response2}`);
+    
+
+//     //let this_is_text = "---///";
+//     //text8 = await this.wait_on(sql);
+//     //const result = await this.wait_on(sql);
+//     //const result2 = await wait_on(sql);
+//     //response = await wait_on(sql);
+
+//     //wait_on(sql).then(function(value) {
+//     //    this_is_text = value;
+//     //});
+
+//     //let allowed_promise = "----> " + userAllowedToDeployWithPromise(sql); // deploy w promise
+//     //let allowed_promise = "----> " + then.userAllowedToDeployWithPromise(sql);
+
+//     //const allowed_promise = await bot.userAllowedToDeployWithPromise(sql);
+
+//     const content = {
+//         blocks: [
+//             {
+//                 "type": "section",
+//                 "text": {
+//                     "type": "plain_text",
+//                     "text": "This is a plain text section block.",
+//                     //"text": wait_on(sql).then + " ",
+//                     //"text": this_is_text + " ",
+//                     "emoji": true
+//                 }
+//             }
+//         ] // insert valid JSON following Block Kit specs
+//     };
+
+//     /*
+//     return new Promise((resolve, reject) => {
+//         //myDatabase.get(message.user).then(function(user) {
+//         wait_on(sql).then(function(user) {
+//             if (user) {
+//                 resolve(true);
+//             } else {
+//                 resolve(false);
+//             }
+//         }).catch(reject);
+//     });
+//     */
+
+//     //await um = wait_on(sql);
+
+//     //await bot.reply(message, content);
+
+//     //await bot.reply(message, allowed_promise);
+
+
+
+
+
+//     //WHERE author LIKE '%$Chris%'
+//     //ORDER BY author`;
+    
+//     /*
+//     let response = "---";
+
+//     db.each(sql, (err, row) => {
+//         if (err) {
+//             reject(err);
+//         }
+//         // process each row here
+//         //response = response + `${row.author} ${row.title} - ${row.link_liatrio}\n`;
+//         //console.log(`${row.author} ${row.title} - ${row.link_liatrio}\n`);
+//         //console.log(row.author);
+        
+        
+//         //response = `${row.author}`;
+//         response += row.author + " ";
+//         //console.log(response);
+//     });
+//     */
+
+//     /*
+//     let p = new Promise((resolve, reject) => {
+//         db.each(sql, (err, row) => {
+//             if (err) {
+//                 reject(err);
+//             }
+//             // process each row here
+//             //response = response + `${row.author} ${row.title} - ${row.link_liatrio}\n`;
+//             //console.log(`${row.author} ${row.title} - ${row.link_liatrio}\n`);
+//             //console.log(row.author);
+            
+            
+//             //response = `${row.author}`;
+//             response += row.author + " ";
+//             console.log(response);
+//         });
+
+//         resolve(response);
+//     });
+//     */
+    
+//     // close the database connection
+    
+
+//     //await bot.
+//     //`This app is running Botkit ${ controller.version }.`
+
+//     //await bot.reply(message, `${response}`);
+    
+
+// //
+//     //let response2 = "TEST";
+//     //await bot.reply(message,`No author found matching: ${param}`); // This is fine
+//     //await bot.reply(message,`...: ${response2}`);
+// //
+//     //await bot.reply(message,`Test...: ${response}`); // Nothing
+
+//     /*
+//     p.then((successMessage) => {
+//         // successMessage is whatever we passed in the resolve(...) function above.
+//         // It doesn't have to be a string, but if it is only a succeed message, it probably will be.
+//         console.log("Yay! " + successMessage);
+//         bot.reply(message,`Test...: ${response}`);
+//       });
+//     */
+
+//     //await bot.reply(message,`Test2...: ${response}`);
+
+//     /*
+//     await bot.sendWebhook({
+//         text: 'This is an incoming webhook' + response,
+//         channel: '#yaks-devops-test-channel',
+//       },function(err,res) {
+//         if (err) {
+//           // ...
+//         }
+//       });  
+//     */
+
+//     //db.close();
+
+//     //await bot.reply(message, response);
+
+//     /*
+//     db.get(sql, (err, row) => {
+//         if (err) {
+//           return console.error(err.message);
+//         }
+//         return row
+//           ? db.each(sql,params, (err, result) => {
+//             // process each row here
+//          })
+//           : await bot.reply(message,`No author found matching: ${param}`);
+      
+//       });
+//     */
+
+// });
