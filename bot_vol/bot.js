@@ -14,6 +14,15 @@ const { SlackAdapter, SlackMessageTypeMiddleware, SlackEventMiddleware } = requi
 
 const { MongoDbStorage } = require('botbuilder-storage-mongodb');
 
+const sqlite3 = require('sqlite3').verbose();
+
+let db = new sqlite3.Database('blog.db', (err) => {
+  if (err) {
+    console.error(err.message);
+  }
+  console.log('Connected to the blog database.');
+});
+
 // Load process.env values from .env file
 require('dotenv').config();
 
@@ -166,10 +175,10 @@ async function getBotUserByTeam(teamId) {
     }
 }
 
-/*
-controller.hears('.*','message', async(bot, message) => {
+controller.hears(new RegExp(/^blog filter author (.*?)$/i), 'message', async(bot, message) => {
 
-    await bot.reply(message, 'I heard: ' + message.text);
+    // message.matches is the result of message.text.match(regexp) so in this case the parameter is in message.matches[1]
+    let param = message.matches[1];
+    await bot.reply(message, `I will look for authors matching \'${ param }\'`);
 
 });
-*/
