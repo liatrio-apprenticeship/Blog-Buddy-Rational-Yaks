@@ -10,6 +10,7 @@ RUN pip3 install sqlalchemy \
     # Setup the 'blogs' table
     && cd ../bot_vol \
     && npm install sqlite3 \
+    && npm install sqlite-async \
     && python3 sqlite_setup.py \
     # Populate the database
     && cd ../sqlite_setup_fldr \
@@ -17,8 +18,8 @@ RUN pip3 install sqlalchemy \
 
 FROM centos/nodejs-10-centos7:latest
 WORKDIR /home/node/bot_vol
-USER root
-COPY --from=builder /home/node/sqlite/ /home/node/sqlite/
+USER 0
+COPY --from=builder /home/node/sqlite/blog.db /home/node/bot_vol/
 COPY --from=builder /home/node/bot_vol /home/node/bot_vol/
 EXPOSE 3000
 
