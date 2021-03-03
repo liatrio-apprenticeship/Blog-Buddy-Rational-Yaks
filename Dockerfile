@@ -9,6 +9,7 @@ RUN pip3 install sqlalchemy \
     && python3 create_db.py \
     # Setup the 'blogs' table
     && cd ../bot_vol \
+    && npm install sqlite3 \
     && python3 sqlite_setup.py \
     # Populate the database
     && cd ../sqlite_setup_fldr \

@@ -14,6 +14,17 @@ const { SlackAdapter, SlackMessageTypeMiddleware, SlackEventMiddleware } = requi
 
 const { MongoDbStorage } = require('botbuilder-storage-mongodb');
 
+// Import sqlite3 module
+const sqlite3 = require('sqlite3').verbose();
+
+// Create new db obj
+let db = new sqlite3.Database('/home/node/sqlite/blog.db', (err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log('Connected to the sqlite3 database.');
+  });
+
 // Load process.env values from .env file
 require('dotenv').config();
 
@@ -23,8 +34,6 @@ if (process.env.MONGO_URI) {
         url : process.env.MONGO_URI,
     });
 }
-
-
 
 const adapter = new SlackAdapter({
     // REMOVE THIS OPTION AFTER YOU HAVE CONFIGURED YOUR APP!
@@ -54,7 +63,6 @@ adapter.use(new SlackEventMiddleware());
 
 // Use SlackMessageType middleware to further classify messages as direct_message, direct_mention, or mention
 adapter.use(new SlackMessageTypeMiddleware());
-
 
 const controller = new Botkit({
     webhook_uri: '/api/messages',
@@ -101,10 +109,6 @@ controller.webserver.get('/', (req, res) => {
 });
 
 
-
-
-
-
 controller.webserver.get('/install', (req, res) => {
     // getInstallLink points to slack's oauth endpoint and includes clientId and scopes
     res.redirect(controller.adapter.getInstallLink());
@@ -129,6 +133,61 @@ controller.webserver.get('/install/auth', async (req, res) => {
         res.status(401);
         res.send(err.message);
     }
+});
+
+// Slash Commands
+controller.on('slash_command',  async function(bot,message){
+	switch(message.command){
+		case "/blog-help":
+			bot.replyPublic(message,"Blog Buddy is a slack bot that helps Liatrio keep track of all its blogs.\n" +
+						"Usage: /blog-help <COMMAND> [OPTIONS]\n\n" +
+						"Commands: \n" +
+						"list - Displays all up to date blogs written by Liatrio employees.\n" +
+						"filter - Displays certain blogs based on specific criteria.\n\n" + 
+						"Options: \n" +
+						"author - Displays blogs by a specific author.\n" +
+						"title  - Displays blogs by a specific title.\n" +
+						"summary - Gives a breif description of blogs that have been selected."
+						);
+			let column_names = ['Author', 'Title', 'Summary'];
+
+        case "/blog-list":
+            var blogTitles = []; // empty vector to hold blog titles;
+            console.log(message);
+
+            let channel = message.channel_id;
+            console.log("Current Channel is: " + channel);
+
+            try {
+                // Call the chat.postMessage method using the WebClient
+                const result = await chat.postMessage({
+                  channel: channelId,
+                  text: "Hello world"
+                });
+              
+                console.log(result);
+              }
+              catch (error) {
+                console.error(error);
+              }
+
+            // bot.replyPublic(message, "Here is the list of current blogs:\n");
+
+            // let sql = `SELECT title FROM blogs`;
+
+            // db.all(sql, [], (err, rows) => {
+            //     if (err) {
+            //       throw err;
+            //     }
+            //     rows.forEach((row) => {
+            //       bot.replyPublic(row.title);
+            //       console.log(row.title);
+            //     });
+            //   });
+
+            
+
+	}//switch statement
 });
 
 let tokenCache = {};
@@ -166,21 +225,12 @@ async function getBotUserByTeam(teamId) {
     }
 }
 
-controller.on('slash_command', function(bot,message){
-	switch(message.command){
-		case "/blog-help":
-			bot.replyPublic(message,"Blog Buddy is a slack bot that helps Liatrio keep track of all its blogs.\n" +
-						"Usage: /blog-help <COMMAND> [OPTIONS]\n\n" +
-						"Commands: \n" +
-						"list - Displays all up to date blogs written by Liatrio employees.\n" +
-						"filter - Displays certain blogs based on specific criteria.\n\n" + 
-						"Options: \n" +
-						"author - Displays blogs by a specific author.\n" +
-						"title  - Displays blogs by a specific title.\n" +
-						"summary - Gives a breif description of blogs that have been selected."
-						);
-			let column_names = ['Author', 'Title', 'Summary'];
 
-	}//switch statement
-});
+// Need to find a way to close (async ?)
+// db.close((err) => {
+//     if (err) {
+//       return console.error(err.message);
+//     }
+//     console.log('Close the database connection.');
+//   });
 
