@@ -178,3 +178,21 @@ async function getBotUserByTeam(teamId) {
         console.error('Team not found in userCache: ', teamId);
     }
 }
+
+controller.on('slash_command', function(bot,message){
+	switch(message.command){
+		case "/blog-help":
+			bot.replyPublic(message,"Hello, Blog Buddy at your service :nerd_face: - Here's a list of of commands I can execute.\n" +
+						"Usage: /blog-help <COMMAND> [OPTION]\n\n" +
+						"Commands: \n" +
+						"list - Displays all up to date blogs written by the Liatrio team.\n" +
+						"filter [OPTION] - Displays certain blogs based on specific criteria.\n\n" + 
+						"Options: \n" +
+						"author - Displays blogs by a specific author.\n" +
+						"title  - Displays blogs by a specific title.\n" +
+						"summary - Displays all blogs with summaries containing a given keyword."
+						);
+
+	}//switch statement
+});
+
