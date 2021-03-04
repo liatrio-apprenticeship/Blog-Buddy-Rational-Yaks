@@ -47,7 +47,7 @@ module.exports = function(controller) {
 
         result = await controller.plugins.db.all(sql);
 
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 47; i++) {
             blogfields.push(
                 {
                     "type" : "section",
@@ -59,7 +59,7 @@ module.exports = function(controller) {
             )
         }
 
-        for(let j = 41; j < result.length; j++) {
+        for(let j = 47; j < result.length; j++) {
             remaining.push(
                 {
                     "type" : "section",
@@ -74,6 +74,7 @@ module.exports = function(controller) {
 
         blogfields = JSON.stringify(setFooterJsonDetails(blogfields));
         remaining = JSON.stringify(remaining);
+
         await bot.reply(message, {blocks: blogfields});
         await bot.replyInThread(message, {blocks: remaining});
     
