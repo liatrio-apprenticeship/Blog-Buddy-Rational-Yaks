@@ -13,6 +13,10 @@
         "botkit": "^4.10.0",
         "botkit-plugin-cms": "^1.0.3",
         "dotenv": "^7.0.0",
+<<<<<<< HEAD
         "sqlite3": "^5.0.2"
+=======
+        "sqlite-async": "1.1.1"
+>>>>>>> b35d4b08585189f2090c8edf7bd80df45bab3183
     }
 }

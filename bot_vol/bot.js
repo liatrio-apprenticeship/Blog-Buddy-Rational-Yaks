@@ -14,7 +14,19 @@ const { SlackAdapter, SlackMessageTypeMiddleware, SlackEventMiddleware } = requi
 
 const { MongoDbStorage } = require('botbuilder-storage-mongodb');
 
+<<<<<<< HEAD
 //const sqlite3 = require('sqlite3').verbose();                     /* import sqlite3 module (verbose set to produce long stack traces) */
+=======
+const Database = require('sqlite-async');
+
+// let db = new sqlite3.Database('blog.db', (err) => {
+//   if (err) {
+//     console.error(err.message);
+//   } else {
+//     console.log('Connected to the blog database.');
+//   }
+// });
+>>>>>>> b35d4b08585189f2090c8edf7bd80df45bab3183
 
 // Load process.env values from .env file
 require('dotenv').config();
@@ -83,8 +95,20 @@ if (process.env.CMS_URI) {
 // Once the bot has booted up its internal services, you can use them to do stuff.
 controller.ready(() => {
 
+    Database.open('blog.db')
+        .then(db => {
+            controller.addPluginExtension("db", db);
+            // load traditional developer-created local custom feature modules
+            controller.loadModules(__dirname + '/features');
+        })
+        .catch(err => {
+            console.error('Connect to db failed', err);
+            process.exit(1);
+        })
     // load traditional developer-created local custom feature modules
-    controller.loadModules(__dirname + '/features');
+    // controller.loadModules(__dirname + '/features');
+
+
 
     /* catch-all that uses the CMS to trigger dialogs */
     if (controller.plugins.cms) {
@@ -201,17 +225,16 @@ async function getBotUserByTeam(teamId) {
 controller.on('slash_command', function(bot,message){
 	switch(message.command){
 		case "/blog-help":
-			bot.replyPublic(message,"Blog Buddy is a slack bot that helps Liatrio keep track of all its blogs.\n" +
-						"Usage: /blog-help <COMMAND> [OPTIONS]\n\n" +
+			bot.replyPublic(message,"Hello, Blog Buddy at your service :nerd_face: - Here's a list of of commands I can execute.\n" +
+						"Usage: /blog-help <COMMAND> [OPTION]\n\n" +
 						"Commands: \n" +
-						"list - Displays all up to date blogs written by Liatrio employees.\n" +
-						"filter - Displays certain blogs based on specific criteria.\n\n" + 
+						"list - Displays all up to date blogs written by the Liatrio team.\n" +
+						"filter [OPTION] - Displays certain blogs based on specific criteria.\n\n" + 
 						"Options: \n" +
 						"author - Displays blogs by a specific author.\n" +
 						"title  - Displays blogs by a specific title.\n" +
-						"summary - Gives a breif description of blogs that have been selected."
+						"summary - Displays all blogs with summaries containing a given keyword."
 						);
-			let column_names = ['Author', 'Title', 'Summary'];
 
 	}//switch statement
 });

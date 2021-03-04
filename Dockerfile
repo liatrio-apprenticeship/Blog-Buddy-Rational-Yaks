@@ -16,10 +16,11 @@ RUN pip3 install sqlalchemy \
 
 FROM centos/nodejs-10-centos7:latest
 WORKDIR /home/node/bot_vol
-USER root
-COPY --from=builder /home/node/sqlite/ /home/node/sqlite/
+USER 0
+COPY --from=builder /home/node/sqlite/blog.db /home/node/bot_vol/
 COPY --from=builder /home/node/bot_vol /home/node/bot_vol/
+RUN chown -R 1001:0 /home/node/bot_vol
+USER 1001
 EXPOSE 3000
 
 ENTRYPOINT [ "./npm_script.sh" ]
-
