@@ -1,4 +1,5 @@
 module.exports = function(controller) {
+    
     controller.hears(['help', 'help me', 'need assistance!', 'save me!!!'], 'message', async(bot, message) => {
         await bot.reply(message,{
             blocks: [
