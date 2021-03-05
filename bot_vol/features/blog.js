@@ -79,8 +79,8 @@ function between(min, max) {
 }
 
 module.exports = function(controller) {
-    // Calvin
-    controller.hears(new RegExp(/^blog filter author (.*?)$/i), 'message', async(bot, message) => {
+    
+    controller.hears(new RegExp(/^blog filter author$/i), 'message', async(bot, message) => {
         
         let sql = `SELECT author FROM blogs`;
         const result = await controller.plugins.db.all(sql);
@@ -89,7 +89,8 @@ module.exports = function(controller) {
 
     });
 
-    // Calvin
+    //////////////// List Commands
+
     controller.hears('bb list', 'message', async(bot, message) => {
         
         let sql = `SELECT title, author, summary, link_liatrio FROM blogs ORDER BY title`;
