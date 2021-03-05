@@ -50,7 +50,14 @@ module.exports = function(controller) {
 						"type": "section",
 						"text": {
 							"type": "mrkdwn",
-							"text": "`filter [OPTIONS]` - Based on specified options, filter will return the specified crtieria. i.e. filter author <author_name> will return blogs written by that author.\n\n" //change
+							"text": "`recent` - Displays the top 10 most recent blogs written by Liatrio team members.\n" //change
+						}
+					},
+					{
+						"type": "section",
+						"text": {
+							"type": "mrkdwn",
+							"text": "`filter [OPTION]` - Based on a specified option, filter will return the matching results. i.e. filter author <author_name> will return blogs written by that author.\n\n" //change
 						}
 					},
 					{

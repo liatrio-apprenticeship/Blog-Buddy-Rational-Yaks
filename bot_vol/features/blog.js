@@ -91,7 +91,7 @@ module.exports = function(controller) {
 
     //////////////// List Commands
 
-    controller.hears('bb list', 'message', async(bot, message) => {
+    controller.hears(new RegExp(/^bb list$/i), 'message', async(bot, message) => {
         
         let sql = `SELECT title, author, summary, link_liatrio FROM blogs ORDER BY title`;
         let result;
@@ -133,6 +133,51 @@ module.exports = function(controller) {
         await bot.reply(message, {blocks: blogfields});
         await bot.replyInThread(message, {blocks: remaining});
     
+    });
+
+    controller.hears(new RegExp(/^bb recent$/i), 'message', async(bot, message) => {
+        
+        let sql = `SELECT kickoff, author, link_liatrio, title, summary FROM blogs ORDER BY kickoff DESC`;
+        const result = await controller.plugins.db.all(sql);
+
+        // Stringify the header message for Slack
+        var header = [];
+        header.push(
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": `The 10 most recent :liatrio: blogs:`
+                }
+            }
+        ); 
+
+        header = JSON.stringify(setFooterJsonDetails(header));
+
+        await bot.reply(message, {blocks: header});
+
+        var numbers = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:", ":keycap_ten:"]
+
+        var blogfields = [];
+        for (let i = 0; i < 10; i++) {
+            blogfields.push(
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": `${numbers[i]} ${result[i].kickoff} - ${result[i].author} - <${result[i].link_liatrio}|${result[i].title}>\n${result[i].summary}`
+                    }
+                }
+            )
+        }
+        blogfields = JSON.stringify(setFooterJsonDetails(blogfields));
+        await bot.reply(message, {blocks: blogfields});
+
+        // Stringify the footer message for Slack
+        var footer = [];
+        footer = JSON.stringify(setFooterJsonDetails(footer));
+        await bot.reply(message, {blocks: footer});
+
     });
 
     //////////////// Filter Commands
