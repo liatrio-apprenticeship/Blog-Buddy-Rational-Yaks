@@ -26,7 +26,7 @@ Configure the follow Slack app features settings under each menu item
 Connect bot to Slack
 1. Goto [https://NGROK_HOST/](#) and follow instructions to add bot to Slack.
 
-## Troubleshooting:
+## Troubleshooting
 
 This bot was developed in a Mac environment. If you are working in a Windows or Linux environment, you may receive docker issues when running "docker-compose up" in regards to the bot_vol/npm_scripts.sh file.
 
