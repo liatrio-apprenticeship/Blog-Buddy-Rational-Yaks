@@ -26,60 +26,6 @@ function setFooterJsonDetails(blogfields) {
     return blogfields;
 }
 
-module.exports = function(controller) {
-    controller.hears(new RegExp(/^blog filter author (.*?)$/i), 'message', async(bot, message) => {
-        
-        let sql = `SELECT author FROM blogs`;
-        const result = await controller.plugins.db.all(sql);
-
-       console.log(result);
-
-    });
-
-    controller.hears('bb list', 'message', async(bot, message) => {
-        
-        let sql = `SELECT title, author, summary, link_liatrio FROM blogs ORDER BY title`;
-        let result;
-
-        var blogfields = [];
-        var remaining = [];
-        blogfields = setHeaderJsonDetails(blogfields);
-
-        result = await controller.plugins.db.all(sql);
-
-        for (let i = 0; i < 47; i++) {
-            blogfields.push(
-                {
-                    "type" : "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": `:liatrio: ${result[i].author} - <${result[i].link_liatrio}|${result[i].title}>\n${result[i].summary}`
-                    }
-                },
-            )
-        }
-
-        for(let j = 47; j < result.length; j++) {
-            remaining.push(
-                {
-                    "type" : "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": `:liatrio: ${result[j].author} - <${result[j].link_liatrio}|${result[j].title}>\n${result[j].summary}`
-                    }
-                },
-            )
-        }
-
-
-        blogfields = JSON.stringify(setFooterJsonDetails(blogfields));
-        remaining = JSON.stringify(remaining);
-
-        await bot.reply(message, {blocks: blogfields});
-        await bot.replyInThread(message, {blocks: remaining});
-    
-    });
-    
 function noResult(blogfields, param, option) {
     if (option == "author") {
         blogfields.push(
@@ -133,6 +79,109 @@ function between(min, max) {
 }
 
 module.exports = function(controller) {
+    
+    controller.hears(new RegExp(/^blog filter author$/i), 'message', async(bot, message) => {
+        
+        let sql = `SELECT author FROM blogs`;
+        const result = await controller.plugins.db.all(sql);
+
+       console.log(result);
+
+    });
+
+    //////////////// List Commands
+
+    controller.hears(new RegExp(/^bb list$/i), 'message', async(bot, message) => {
+        
+        let sql = `SELECT title, author, summary, link_liatrio FROM blogs ORDER BY title`;
+        let result;
+
+        var blogfields = [];
+        var remaining = [];
+        blogfields = setHeaderJsonDetails(blogfields);
+
+        result = await controller.plugins.db.all(sql);
+
+        for (let i = 0; i < 47; i++) {
+            blogfields.push(
+                {
+                    "type" : "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": `:liatrio: ${result[i].author} - <${result[i].link_liatrio}|${result[i].title}>\n${result[i].summary}`
+                    }
+                },
+            )
+        }
+
+        for(let j = 47; j < result.length; j++) {
+            remaining.push(
+                {
+                    "type" : "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": `:liatrio: ${result[j].author} - <${result[j].link_liatrio}|${result[j].title}>\n${result[j].summary}`
+                    }
+                },
+            )
+        }
+
+
+        blogfields = JSON.stringify(setFooterJsonDetails(blogfields));
+        remaining = JSON.stringify(remaining);
+
+        await bot.reply(message, {blocks: blogfields});
+        await bot.replyInThread(message, {blocks: remaining});
+    
+    });
+
+    controller.hears(new RegExp(/^bb recent$/i), 'message', async(bot, message) => {
+        
+        let sql = `SELECT kickoff, author, link_liatrio, title, summary FROM blogs ORDER BY kickoff DESC`;
+        const result = await controller.plugins.db.all(sql);
+
+        // Stringify the header message for Slack
+        var header = [];
+        header.push(
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": `The 10 most recent :liatrio: blogs:`
+                }
+            }
+        ); 
+
+        header = JSON.stringify(setFooterJsonDetails(header));
+
+        await bot.reply(message, {blocks: header});
+
+        var numbers = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:", ":keycap_ten:"]
+
+        var blogfields = [];
+        for (let i = 0; i < 10; i++) {
+            blogfields.push(
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": `${numbers[i]} ${result[i].kickoff} - <${result[i].link_liatrio}|${result[i].title}> by ${result[i].author}\n${result[i].summary}`
+                    }
+                }
+            )
+        }
+        blogfields = JSON.stringify(setFooterJsonDetails(blogfields));
+        await bot.reply(message, {blocks: blogfields});
+
+        // Stringify the footer message for Slack
+        var footer = [];
+        footer = JSON.stringify(setFooterJsonDetails(footer));
+        await bot.reply(message, {blocks: footer});
+
+    });
+
+    //////////////// Filter Commands
+
     controller.hears(new RegExp(/^bb filter (\S*) (\S*)$/i), 'message', async(bot, message) => {
 
         let filter = message.matches[1];
@@ -148,9 +197,9 @@ module.exports = function(controller) {
         if (filter == "author") {
             let query = message.matches[2];
             console.log("I heard author");
-            sql = `SELECT title, link_liatrio FROM blogs WHERE author = \'${ query }\'`;
+            sql = `SELECT title, link_liatrio FROM blogs WHERE author = ?`;
 
-            result = await controller.plugins.db.all(sql);
+            result = await controller.plugins.db.all(sql, query);
 
             for (let i = 0; i < result.length; i++) // Format the database query
                 fields.push({"type": "mrkdwn", "text": `:liatrio: <${result[i].link_liatrio}|${result[i].title}>`});
@@ -177,9 +226,9 @@ module.exports = function(controller) {
         } else if (filter == "title") {
             let query = message.matches[2];
             console.log("I heard title");
-            sql = `SELECT author, title, link_liatrio FROM blogs WHERE title LIKE \'%${ query }%\'`;
+            sql = `SELECT author, title, link_liatrio FROM blogs WHERE title LIKE ?`;
 
-            result = await controller.plugins.db.all(sql);
+            result = await controller.plugins.db.all(sql, "%" + query + "%");
 
             for (let i = 0; i < result.length; i++) // Format the database query
                 fields.push({"type": "mrkdwn", "text": `:liatrio: ${result[i].author} - <${result[i].link_liatrio}|${result[i].title}>`});
@@ -196,9 +245,9 @@ module.exports = function(controller) {
         } else if (filter == "summary") {
             let query = message.matches[2];
             console.log("I heard summary");
-            sql = `SELECT author, title, summary, link_liatrio FROM blogs WHERE summary LIKE \'%${ query }%\'`;
+            sql = `SELECT author, title, summary, link_liatrio FROM blogs WHERE summary LIKE ?`;
 
-            result = await controller.plugins.db.all(sql);
+            result = await controller.plugins.db.all(sql, "%" + query + "%");
 
             let before = blogfields.length
 
@@ -229,9 +278,7 @@ module.exports = function(controller) {
         await bot.reply(message, {blocks: blogfields});
     
     });
-}
 
-module.exports = function(controller) {
     controller.hears(new RegExp(/^bb random$/i), 'message', async(bot, message) => {
         let filter = message.matches[1];
         let sql = "";
@@ -263,5 +310,5 @@ module.exports = function(controller) {
         await bot.reply(message, {blocks: blogfields});
 
     });
-}
+
 }
