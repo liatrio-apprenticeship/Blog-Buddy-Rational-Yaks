@@ -134,7 +134,8 @@ module.exports = function(controller) {
     
     });
 
-    ////////////////
+    //////////////// Filter Commands
+
     controller.hears(new RegExp(/^bb filter (\S*) (\S*)$/i), 'message', async(bot, message) => {
 
         let filter = message.matches[1];
@@ -263,5 +264,5 @@ module.exports = function(controller) {
         await bot.reply(message, {blocks: blogfields});
 
     });
-    
+
 }

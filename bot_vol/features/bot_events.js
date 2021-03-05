@@ -88,6 +88,13 @@ module.exports = function(controller) {
 						}
 					},
 					{
+						"type": "section",
+						"text": {
+							"type": "mrkdwn",
+							"text": "`summary` - Displays all blogs with summaries containing a given keyword.\n"
+						}
+					},
+					{
 						"type": "divider"
 					},
 					{
