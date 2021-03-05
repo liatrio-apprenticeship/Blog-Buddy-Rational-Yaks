@@ -151,9 +151,9 @@ module.exports = function(controller) {
         if (filter == "author") {
             let query = message.matches[2];
             console.log("I heard author");
-            sql = `SELECT title, link_liatrio FROM blogs WHERE author = \'${ query }\'`;
+            sql = `SELECT title, link_liatrio FROM blogs WHERE author = ?`;
 
-            result = await controller.plugins.db.all(sql);
+            result = await controller.plugins.db.all(sql, query);
 
             for (let i = 0; i < result.length; i++) // Format the database query
                 fields.push({"type": "mrkdwn", "text": `:liatrio: <${result[i].link_liatrio}|${result[i].title}>`});
@@ -180,9 +180,9 @@ module.exports = function(controller) {
         } else if (filter == "title") {
             let query = message.matches[2];
             console.log("I heard title");
-            sql = `SELECT author, title, link_liatrio FROM blogs WHERE title LIKE \'%${ query }%\'`;
+            sql = `SELECT author, title, link_liatrio FROM blogs WHERE title LIKE ?`;
 
-            result = await controller.plugins.db.all(sql);
+            result = await controller.plugins.db.all(sql, "%" + query + "%");
 
             for (let i = 0; i < result.length; i++) // Format the database query
                 fields.push({"type": "mrkdwn", "text": `:liatrio: ${result[i].author} - <${result[i].link_liatrio}|${result[i].title}>`});
@@ -199,9 +199,9 @@ module.exports = function(controller) {
         } else if (filter == "summary") {
             let query = message.matches[2];
             console.log("I heard summary");
-            sql = `SELECT author, title, summary, link_liatrio FROM blogs WHERE summary LIKE \'%${ query }%\'`;
+            sql = `SELECT author, title, summary, link_liatrio FROM blogs WHERE summary LIKE ?`;
 
-            result = await controller.plugins.db.all(sql);
+            result = await controller.plugins.db.all(sql, "%" + query + "%");
 
             let before = blogfields.length
 
