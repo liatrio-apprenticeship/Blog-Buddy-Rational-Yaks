@@ -165,7 +165,7 @@ module.exports = function(controller) {
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": `${numbers[i]} ${result[i].kickoff} - ${result[i].author} - <${result[i].link_liatrio}|${result[i].title}>\n${result[i].summary}`
+                        "text": `${numbers[i]} ${result[i].kickoff} - <${result[i].link_liatrio}|${result[i].title}> by ${result[i].author}\n${result[i].summary}`
                     }
                 }
             )
